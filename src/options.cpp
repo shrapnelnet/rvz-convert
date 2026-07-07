@@ -43,6 +43,7 @@ void parseOptions(int argc, char *argv[]) {
     }
 
     if (optind == argc) {
+        help();
         exit(0);
     }
 }
