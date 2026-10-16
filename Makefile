@@ -1,5 +1,5 @@
 all: src/main.cpp src/options.cpp submodules preinstall
-	cc -Wall -O -std=c++20 src/main.cpp src/options.cpp -o bin/rvz-convert -lstdc++
+	cc -Wall -O -std=c++20 src/main.cpp src/options.cpp -o bin/rvz-convert -lstdc++ -pthread
 
 submodules:
 	mkdir -p bin

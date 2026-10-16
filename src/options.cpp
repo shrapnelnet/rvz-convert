@@ -1,6 +1,9 @@
+#include "options.h"
+
+#include <cstdlib>
 #include <getopt.h>
 #include <iostream>
-#define VERSION "v1.0.0-rc2"
+#define VERSION "v1.1.0"
 
 void version() {
     std::cout << "rvz-convert " << VERSION << std::endl;
@@ -11,34 +14,52 @@ void version() {
 }
 
 void help() {
-    std::cout << "Usage: rvz-convert [options] file.rvz" << std::endl;
+    std::cout << "Usage: rvz-convert [options] file.rvz [file2.rvz ...]" << std::endl;
     std::cout << "Options:\n\t-h --help\tDisplay this message" << std::endl;
     std::cout << "\t-v --version\tDisplay version information" << std::endl;
+    std::cout << "\t-j --jobs N\tConvert up to N games at the same time (default: 1)" << std::endl;
+    std::cout << "\t-k --keep-logs\tKeep the conversion log even when it succeeds" << std::endl;
 }
 
-void parseOptions(int argc, char *argv[]) {
+Options parseOptions(int argc, char *argv[]) {
+    Options opts;
     int c;
     int option_index = 0;
 
     while (true) {
         static option options[] = {
-            {"version",no_argument, nullptr, 'v'},
+            {"version", no_argument, nullptr, 'v'},
             {"help", no_argument, nullptr, 'h'},
+            {"jobs", required_argument, nullptr, 'j'},
+            {"keep-logs", no_argument, nullptr, 'k'},
             {nullptr, 0, nullptr, 0}
         };
-        c = getopt_long(argc, argv, "hv", options, &option_index);
+        c = getopt_long(argc, argv, "hvj:k", options, &option_index);
         if (c == -1)
             break;
         switch (c) {
             case 'h':
                 help();
-                break;
+                exit(0);
             case 'v':
                 version();
+                exit(0);
+            case 'j': {
+                char *end = nullptr;
+                long jobs = std::strtol(optarg, &end, 10);
+                if (*end != '\0' || jobs < 1) {
+                    std::cerr << "Error: --jobs expects a positive number, got: " << optarg << std::endl;
+                    exit(2);
+                }
+                opts.jobs = static_cast<unsigned int>(jobs);
+                break;
+            }
+            case 'k':
+                opts.keepLogs = true;
                 break;
             default:
                 help();
-                break;
+                exit(2);
         }
     }
 
@@ -46,4 +67,9 @@ void parseOptions(int argc, char *argv[]) {
         help();
         exit(0);
     }
+
+    for (int i = optind; i < argc; i++) {
+        opts.files.emplace_back(argv[i]);
+    }
+    return opts;
 }
