@@ -12,4 +12,4 @@ jobs:
      - name: deps
        run: sudo apt install qt6-base-dev qt6-base-private-dev qt6-svg-dev build-essential cmake libxi-dev libxrandr-dev
      - name: make
-       run: make -j$(nproc)
+       run: make -j$(($(nproc)-1))
