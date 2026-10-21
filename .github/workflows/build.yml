@@ -1,16 +1,15 @@
+name: rvz-convert build
 
-#name: C/C++ CI
+on:
+ push:
+   branches: [ "master" ]
 
-#on:
-#  push:
-#    branches: [ "master" ]
-
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#      - name: deps
-#        run: sudo apt install qt6-base-dev qt6-base-private-dev qt6-svg-dev build-essential cmake libxi-dev libxrandr-dev
-#      - name: make
-#        run: make -j$(nproc)
+jobs:
+ build:
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@v6
+     - name: deps
+       run: sudo apt install qt6-base-dev qt6-base-private-dev qt6-svg-dev build-essential cmake libxi-dev libxrandr-dev
+     - name: make
+       run: make -j$(nproc)
