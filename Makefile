@@ -3,10 +3,13 @@ all: src/main.cpp src/options.cpp submodules preinstall
 
 submodules:
 	mkdir -p bin
+	@echo === Clone submodules ===
 	git submodule update --init --recursive --depth=1
-	cmake -S lib/dolphin -B lib/dolphin/cmake-build
-	make -C lib/dolphin/cmake-build dolphin-tool
-	make -C lib/wiimms-iso-tools/project
+	@echo === CMake: Build dolphin at lib/dolphin/cmake-build ===
+	cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -S lib/dolphin -B lib/dolphin/cmake-build
+	@echo === Build dolphin-tool ===
+	cmake --build lib/dolphin/cmake-build --target dolphin-tool -j${nproc}
+	make -C lib/wiimms-iso-tools/project -j${nproc}
 
 preinstall: submodules
 	cp lib/wiimms-iso-tools/project/bin/wit bin/
